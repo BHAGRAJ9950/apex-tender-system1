@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Apex Infrastructure | Secured ERP</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+<body class="dark-theme">
+
+    <div class="bg-animation"></div>
+
+    <div id="security-lock" class="lock-screen">
+        <div class="lock-card" id="lock-card-element">
+            <div class="pulse-ring">
+                <i class="fa-solid fa-shield-halved lock-icon"></i>
+            </div>
+            <h2 class="gradient-text">Restricted Access</h2>
+            <p>Apex Infrastructure ERP</p>
+            <div class="input-group mt-15">
+                <input type="password" id="passcode-input" class="modern-input text-center" placeholder="Enter Master Passcode">
+            </div>
+            <button id="unlock-btn" class="primary-btn"><i class="fa-solid fa-lock-open fa-bounce" style="--fa-animation-duration: 2s;"></i> Unlock System</button>
+            <p id="lock-error" class="error-text" style="display: none; color: var(--crimson-red); margin-top: 10px; font-size: 0.85rem; font-weight: 600;">Incorrect Passcode!</p>
+        </div>
+    </div>
+
+    <div id="secure-app-wrapper" style="display: none; opacity: 0; transition: opacity 0.8s ease;">
+        <header class="top-header">
+            <div class="brand-info">
+                <h1 class="firm-name gradient-text"><i class="fa-solid fa-building-shield"></i> Apex Infrastructure</h1>
+                <p class="executive-title">Proprietor & MD: Tulsa Ram Choudhary</p>
+            </div>
+        </header>
+
+        <nav class="main-nav">
+            <button class="nav-btn active" data-target="module-dashboard">
+                <i class="fa-solid fa-chart-pie"></i><span>Dashboard</span>
+            </button>
+            <button class="nav-btn" data-target="module-g-schedule">
+                <i class="fa-solid fa-calculator"></i><span>G-Schedule</span>
+            </button>
+            <button class="nav-btn" data-target="module-funds">
+                <i class="fa-solid fa-vault"></i><span>Funds</span>
+            </button>
+            <button class="nav-btn" data-target="module-site-ops">
+                <i class="fa-solid fa-helmet-safety"></i><span>Daily Log</span>
+            </button>
+        </nav>
+
+        <main id="app-container">
+            <section id="module-dashboard" class="app-module active-module">
+                <div class="kpi-container">
+                    <div class="kpi-card success-glow animated-card">
+                        <h3>Total Tender Value</h3>
+                        <div class="kpi-value" id="kpi-total-value">₹ 0</div>
+                        <i class="fa-solid fa-money-bill-trend-up kpi-icon fa-beat-fade" style="--fa-animation-duration: 3s;"></i>
+                    </div>
+                    <div class="kpi-card profit-glow animated-card" id="kpi-profit-card" style="animation-delay: 0.1s;">
+                        <h3>Net Expected Profit</h3>
+                        <div class="kpi-value" id="kpi-net-profit">₹ 0</div>
+                        <i class="fa-solid fa-chart-line kpi-icon fa-beat-fade" style="--fa-animation-duration: 3s; animation-delay: 0.5s;"></i>
+                    </div>
+                </div>
+                
+                <div class="launchpad-container animated-card" style="animation-delay: 0.2s;">
+                    <h2 class="section-title">Quick Portals</h2>
+                    <div class="grid-launchpad">
+                        <a href="https://eproc.rajasthan.gov.in" target="_blank" class="launch-btn">
+                            <i class="fa-solid fa-landmark hover-bounce"></i> <span>Raj eProc</span>
+                        </a>
+                        <a href="https://sppp.rajasthan.gov.in" target="_blank" class="launch-btn">
+                            <i class="fa-solid fa-file-contract hover-bounce"></i> <span>SPPP</span>
+                        </a>
+                        <a href="https://sso.rajasthan.gov.in" target="_blank" class="launch-btn">
+                            <i class="fa-solid fa-key hover-bounce"></i> <span>SSO ID</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <section id="module-g-schedule" class="app-module hidden-module">
+                <h2 class="section-title">Smart G-Schedule Engine</h2>
+                <div class="tender-calculator-grid">
+                    <div class="calc-card animated-card">
+                        <h3>Project Quoting Details</h3>
+                        <div class="input-group">
+                            <label>Tender Name / ID</label>
+                            <input type="text" id="tender-name" class="modern-input focus-glow" placeholder="e.g. NH-8 Repair">
+                        </div>
+                        <div class="input-group">
+                            <label>Base PWD G-Schedule Value (₹)</label>
+                            <input type="number" id="base-tender-value" class="modern-input focus-glow" placeholder="5000000">
+                        </div>
+                        <div class="slider-container">
+                            <label>Quoted Rate Adjustment: <span id="quote-badge" class="status-badge badge-neutral">0%</span></label>
+                            <input type="range" id="quote-slider" min="-20" max="20" step="1" value="0">
+                            <div class="slider-labels">
+                                <span>-20%</span><span>0%</span><span>+20%</span>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Peti-Contractor Rate (%)</label>
+                            <input type="number" id="peti-rate" class="modern-input focus-glow" value="-10">
+                        </div>
+                    </div>
+
+                    <div class="calc-card animated-card" style="animation-delay: 0.1s;">
+                        <h3>Deductions & Profit</h3>
+                        <div class="input-group">
+                            <label>Total Overheads (Site + Contingency + CA) %</label>
+                            <input type="number" id="total-overheads" class="modern-input focus-glow" value="5.0" step="0.5">
+                        </div>
+                        <div class="result-dashboard mt-15 smooth-transition">
+                            <div class="result-row">
+                                <span>Quoted Amount:</span>
+                                <strong id="res-quoted-amount">₹ 0</strong>
+                            </div>
+                            <div class="result-row highlight-profit">
+                                <span>Net Profit:</span>
+                                <strong id="res-net-profit" class="success-text">₹ 0</strong>
+                            </div>
+                        </div>
+                        <button id="save-tender-btn" class="primary-btn mt-15 hover-glow"><i class="fa-solid fa-floppy-disk"></i> Save Project</button>
+                    </div>
+                </div>
+
+                <div class="calc-card table-card mt-15 animated-card" style="animation-delay: 0.2s;">
+                    <h3>Saved Tenders History</h3>
+                    <div class="table-responsive">
+                        <table class="data-table hover-table">
+                            <thead>
+                                <tr>
+                                    <th>Project Name</th>
+                                    <th>Base Value</th>
+                                    <th>Quoted</th>
+                                    <th>Profit</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tenders-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="module-funds" class="app-module hidden-module">
+                <h2 class="section-title">Funds & Locked Capital (EMD/BG)</h2>
+                <div class="funds-grid">
+                    <div class="calc-card animated-card">
+                        <h3>Add New Deposit</h3>
+                        <form id="add-fund-form">
+                            <div class="input-group">
+                                <label>Deposit Type</label>
+                                <select id="fund-type" class="modern-input focus-glow" required>
+                                    <option value="EMD">EMD</option>
+                                    <option value="SD">SD</option>
+                                    <option value="BG">BG</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>Project Name</label>
+                                <input type="text" id="fund-tender-name" class="modern-input focus-glow" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Amount (₹)</label>
+                                <input type="number" id="fund-amount" class="modern-input focus-glow" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Expiry Date</label>
+                                <input type="date" id="fund-expiry" class="modern-input focus-glow" required>
+                            </div>
+                            <button type="submit" class="primary-btn hover-glow"><i class="fa-solid fa-plus"></i> Save Record</button>
+                        </form>
+                    </div>
+                    <div class="calc-card table-card animated-card" style="animation-delay: 0.1s;">
+                        <h3>Active Deposits</h3>
+                        <div class="table-responsive">
+                            <table class="data-table hover-table">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Project</th>
+                                        <th>Amount</th>
+                                        <th>Expiry</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="funds-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="module-site-ops" class="app-module hidden-module">
+                <h2 class="section-title">Daily Site Logs & Hajiri</h2>
+                <div class="tender-calculator-grid"> 
+                    <div class="calc-card animated-card">
+                        <h3>Add Daily Log</h3>
+                        <form id="site-log-form">
+                            <div class="input-group">
+                                <label>Date</label>
+                                <input type="date" id="log-date" class="modern-input focus-glow" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Project Site</label>
+                                <input type="text" id="site-location" class="modern-input focus-glow" required placeholder="e.g. Zone 4 Road">
+                            </div>
+                            <div class="input-group">
+                                <label>Total Labor Count (Hajiri)</label>
+                                <input type="number" id="labor-count" class="modern-input focus-glow" required placeholder="e.g. 15">
+                            </div>
+                            <div class="input-group">
+                                <label>JCB / Machine Hours</label>
+                                <input type="number" id="machine-hours" class="modern-input focus-glow" step="0.5" placeholder="e.g. 4.5">
+                            </div>
+                            <div class="input-group">
+                                <label>Diesel Consumption (Liters)</label>
+                                <input type="number" id="diesel-liters" class="modern-input focus-glow" placeholder="e.g. 20">
+                            </div>
+                            <button type="submit" class="primary-btn hover-glow"><i class="fa-solid fa-check"></i> Save Daily Log</button>
+                        </form>
+                    </div>
+
+                    <div class="calc-card table-card animated-card" style="animation-delay: 0.1s;">
+                        <h3>Log History</h3>
+                        <div class="table-responsive">
+                            <table class="data-table hover-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Site</th>
+                                        <th>Labor</th>
+                                        <th>JCB Hrs</th>
+                                        <th>Diesel</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="logs-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
